@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/bradfitz/slice"
-	"io/ioutil"
-	"strconv"
 )
 
 const LEN = 5
@@ -29,7 +27,6 @@ func main() {
 	portion = pull(portion, 1)
 	fmt.Println(portion)
 
-	writeToFile(portion)
 }
 
 func sort(portion []int) {
@@ -43,6 +40,7 @@ func sortDesc(portion []int) {
 		return portion[i] > portion[j]
 	})
 }
+
 func add(portion []int, elm int) []int {
 	return append(portion, elm)
 }
@@ -60,14 +58,4 @@ func reverse(portion []int) {
 
 func pull(portion []int, index int) []int {
 	return append(portion[:index], portion[index+1:]...)
-}
-
-func writeToFile(portion []int) {
-	f, _ := os.Create("liste")
-	defer f.Close()
-	dump := []byte(portion)
-	_, err := f.Write(dump)
-	if err != nil {
-		panic(err)
-	}
 }
