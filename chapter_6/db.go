@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Book struct {
@@ -21,12 +23,53 @@ func main() {
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
 	c := session.DB("test").C("biblio")
+	create(c)
+	show(c)
+	delete(c, "Game of thrones")
+	show(c)
+	update(c, Book{"Lord of the kings", "Random edited guy", time.Now()})
+	show(c)
+}
 
-	err = c.Insert(
+func create(c *mgo.Collection) {
+	// make title unique
+	err := c.Insert(
 		&Book{"Game of thrones", "Random Guy", time.Now()},
 		&Book{"Lord of the kings", "Random Guy", time.Now()},
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func read(c *mgo.Collection) (results []Book) {
+	// TODO: make the read method accept an aptional query
+	err := c.Find(bson.M{}).All(&results)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return
+}
+
+func delete(c *mgo.Collection, title string) {
+	err := c.Remove(bson.M{"title": title})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func update(c *mgo.Collection, book Book) {
+	err := c.Update(bson.M{"title": book.Title}, book)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func show(c *mgo.Collection) {
+	fmt.Println("--------------------")
+	for _, result := range read(c) {
+		// TODO: add toString method
+		fmt.Println(result)
+	}
+	fmt.Println("--------------------")
 }
