@@ -15,6 +15,10 @@ type Book struct {
 	PublishedAt time.Time
 }
 
+func (b *Book) toString() string {
+	return "{ title: " + b.Title + " ,writer: " + b.Writer + " ,publishedAt: " + b.PublishedAt.String() + " }"
+}
+
 func main() {
 	session, err := mgo.Dial("localhost")
 	if err != nil {
@@ -104,7 +108,7 @@ func update(c *mgo.Collection, title string, book Book) {
 
 func show(c *mgo.Collection) {
 	for _, result := range read(c) {
-		fmt.Println(result)
+		fmt.Println(result.toString())
 	}
 }
 
