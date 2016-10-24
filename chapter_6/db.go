@@ -118,10 +118,3 @@ func deleteAll(c *mgo.Collection) {
 		log.Fatal(err)
 	}
 }
-
-//TODO: add toString method to book
-//TODO: bind crud method to Book model
-//TODO: make title unique
-//TODO: make the read method accept an optional query
-//TODO : PublishedAt bug
-// TODO: add toString method
