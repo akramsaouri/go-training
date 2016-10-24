@@ -27,25 +27,30 @@ func main() {
 	deleteAll(c)
 	create(c)
 	show(c)
-	delete(c, "Game of thrones")
+	delete(c)
 	show(c)
-	update(c, Book{"Lord of the kings", "Random edited guy", time.Now()})
+	update(c)
 	show(c)
 }
 
 func create(c *mgo.Collection) {
-	// make title unique
+	var title, writer string
+
+	fmt.Println("> title: ")
+	fmt.Scanf("%s", &title)
+	fmt.Println("> writer: ")
+	fmt.Scanf("%s", &writer)
+
 	err := c.Insert(
-		&Book{"Game of thrones", "Random Guy", time.Now()},
-		&Book{"Lord of the kings", "Random Guy", time.Now()},
+		&Book{title, writer, time.Now()},
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println("Book inserted")
 }
 
 func read(c *mgo.Collection) (results []Book) {
-	// TODO: make the read method accept an optional query
 	err := c.Find(bson.M{}).All(&results)
 	if err != nil {
 		log.Fatal(err)
@@ -53,17 +58,33 @@ func read(c *mgo.Collection) (results []Book) {
 	return
 }
 
-func delete(c *mgo.Collection, title string) {
+func delete(c *mgo.Collection) {
+	var title string
+	fmt.Println("> title:")
+	fmt.Scanf("%s", &title)
 	err := c.Remove(bson.M{"title": title})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Book not found.")
+	} else {
+		fmt.Println("Book deleted.")
 	}
 }
 
-func update(c *mgo.Collection, book Book) {
-	err := c.Update(bson.M{"title": book.Title}, book)
+func update(c *mgo.Collection) {
+	var title, newTitle, newWriter string
+	fmt.Println("> title:")
+	fmt.Scanf("%s", &title)
+	fmt.Println("> new title:")
+	fmt.Scanf("%s", &newTitle)
+	fmt.Println("> new writer:")
+	fmt.Scanf("%s", &newWriter)
+
+	book := Book{newTitle, newWriter, time.Now()}
+	err := c.Update(bson.M{"title": title}, book)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Book not found")
+	} else {
+		fmt.Println("Book updated")
 	}
 }
 
@@ -87,3 +108,6 @@ func deleteAll(c *mgo.Collection) {
 //TODO: console io
 //TODO: add toString method to book
 //TODO: bind crud method to Book model
+//TODO: make title unique
+//TODO: make the read method accept an optional query
+//TODO : PublishedAt bug
