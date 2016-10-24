@@ -22,7 +22,9 @@ func main() {
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("test").C("biblio")
+	c := session.DB("go-training").C("biblio")
+
+	deleteAll(c)
 	create(c)
 	show(c)
 	delete(c, "Game of thrones")
@@ -43,7 +45,7 @@ func create(c *mgo.Collection) {
 }
 
 func read(c *mgo.Collection) (results []Book) {
-	// TODO: make the read method accept an aptional query
+	// TODO: make the read method accept an optional query
 	err := c.Find(bson.M{}).All(&results)
 	if err != nil {
 		log.Fatal(err)
@@ -73,3 +75,15 @@ func show(c *mgo.Collection) {
 	}
 	fmt.Println("--------------------")
 }
+
+func deleteAll(c *mgo.Collection) {
+	_, err := c.RemoveAll(bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+//TODO: user enter book details via console
+//TODO: console io
+//TODO: add toString method to book
+//TODO: bind crud method to Book model
